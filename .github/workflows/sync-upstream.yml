@@ -1,0 +1,29 @@
+name: Sync Fork with Upstream
+
+on:
+  schedule:
+    # 北京时间每天凌晨 3 点执行定时同步
+    - cron: '0 19 * * *'
+  workflow_dispatch: # 允许你随时从 GitHub 网页手动触发，以备不时之需
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Fork Repository
+        uses: actions/checkout@v4
+        with:
+          # 获取完整的提交历史，这对后续操作至关重要
+          fetch-depth: 0
+
+      - name: Sync Upstream Changes
+        uses: dabreadman/sync-upstream-repo@v1.3.0
+        with:
+          # 上游仓库地址
+          upstream_repo: qist/tvbox
+          # 要同步的上游分支，通常是 main 或 master
+          upstream_branch: master
+          # 你的 Fork 分支名
+          target_branch: master
+          # GitHub 的默认 token 已拥有足够权限
+          token: ${{ secrets.GITHUB_TOKEN }}
