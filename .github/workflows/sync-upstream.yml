@@ -2,28 +2,30 @@ name: Sync Fork with Upstream
 
 on:
   schedule:
-    # 北京时间每天凌晨 3 点执行定时同步
+    # 北京时间每天凌晨 3 点执行（UTC 时间 19:00）
     - cron: '0 19 * * *'
-  workflow_dispatch: # 允许你随时从 GitHub 网页手动触发，以备不时之需
+  workflow_dispatch:   # 允许手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Fork Repository
+      - name: Checkout fork repository
         uses: actions/checkout@v4
         with:
-          # 获取完整的提交历史，这对后续操作至关重要
-          fetch-depth: 0
-
-      - name: Sync Upstream Changes
-        uses: dabreadman/sync-upstream-repo@v1.3.0
-        with:
-          # 上游仓库地址
-          upstream_repo: qist/tvbox
-          # 要同步的上游分支，通常是 main 或 master
-          upstream_branch: master
-          # 你的 Fork 分支名
-          target_branch: master
-          # GitHub 的默认 token 已拥有足够权限
+          fetch-depth: 0          # 获取完整历史，便于合并
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add upstream repository
+        run: git remote add upstream https://github.com/qist/tvbox.git
+
+      - name: Fetch upstream changes
+        run: git fetch upstream
+
+      - name: Merge upstream/master into master
+        run: |
+          git checkout master
+          git merge upstream/master --no-edit
+
+      - name: Push changes to fork
+        run: git push origin master
