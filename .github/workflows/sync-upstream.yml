@@ -2,7 +2,7 @@ name: Sync Fork with Upstream
 
 on:
   schedule:
-    # 北京时间每天凌晨 3 点执行（UTC 时间 19:00）
+    # 北京时间每天凌晨 3 点执行（UTC 19:00）
     - cron: '0 19 * * *'
   workflow_dispatch:   # 允许手动触发
 
@@ -13,8 +13,14 @@ jobs:
       - name: Checkout fork repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0          # 获取完整历史，便于合并
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      # 配置 Git 用户身份（解决 committer identity unknown 错误）
+      - name: Configure Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Add upstream repository
         run: git remote add upstream https://github.com/qist/tvbox.git
