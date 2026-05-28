@@ -3,7 +3,7 @@ name: Sync Upstream qist/tvbox
 on:
   schedule:
     # 北京时间每天凌晨 3 点执行（UTC 19:00）
-    - cron: '0 19 * * *'
+#    - cron: '0 19 * * *'
   workflow_dispatch:  # 允许手动触发
 
 jobs:
