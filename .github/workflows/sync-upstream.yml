@@ -1,0 +1,26 @@
+name: Sync Upstream qist/tvbox
+
+on:
+  schedule:
+    # 北京时间每天凌晨 3 点执行（UTC 19:00）
+    - cron: '0 19 * * *'
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Sync with upstream
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          target_repo_token: ${{ secrets.PAT_TOKEN }}
+          upstream_sync_repo: qist/tvbox
+          upstream_sync_branch: master
+          target_sync_branch: master
+          test_mode: false
